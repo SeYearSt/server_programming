@@ -1,0 +1,7 @@
+﻿<div class="navbar-collapse collapse">
+    <ul class="nav navbar-nav">
+        <li>@Html.ActionLink("Books", "Index", "Books", new { area = "Admin" }, null)</li>
+        <li>@Html.ActionLink("Sages", "Index", "Sages", new { area = "Admin" }, null)</li>
+    </ul>
+    @Html.Partial("_LoginPartial")
+</div>

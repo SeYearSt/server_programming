@@ -1,0 +1,41 @@
+﻿@using Lab2.Models
+@model IEnumerable<Lab2.Models.Book>
+@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Лабораторна робота №2</h1>
+</div>
+
+<div class="container">
+    @foreach (var book in Model)
+    {
+        <div class="col-md-4">
+            <h2>@Html.ActionLink(book.name.ToString(), "Details", "Books", new { id = book.IdBook }, null)</h2>
+            <p><i>@Html.Raw(String.Join("<br />", book.Sages.Select(x => Html.ActionLink(x.name, "Details", "Sages", new { id = x.IdSage }, null))))</i></p>
+            <p>@Html.DisplayFor(model => book.description)</p>
+            <p>
+                <!--
+                @Html.ActionLink(
+                    linkText: HttpUtility.HtmlDecode("Замовити &raquo;"),
+                    actionName: "Create",
+                    controllerName: "Order",
+                    routeValues: new { order = new OrderBook(book, 1) },
+                    htmlAttributes:
+                        new
+                        {
+                            @class = "btn btn-default",
+                            data_BookId = book.IdBook.ToString()
+                        }
+                )
+                -->
+                <input type="button" value="Замовити &raquo;" data-BookId="@book.IdBook.ToString()" class="btn btn-default OrderBook_Item_Add" />
+            </p>
+        </div>
+    }
+</div>
+<script>
+    //var ajaxUrl = "@Url.Action("Create", "Order")";
+    var ajaxUrl = "@Url.Action("OrderBook", "api/Order")";
+</script>

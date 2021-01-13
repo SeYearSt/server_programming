@@ -1,0 +1,12 @@
+﻿@using Lab2.Models
+@{
+    int amount = 0;
+    if (Session["cart"] != null)
+    {
+        amount = ((List<OrderBook>)Session["cart"]).Sum(x => x.Quantity);
+    }
+}
+
+<ul class="nav navbar-nav navbar-right">
+    <li id="Nav_Item_CartPartial">@Html.ActionLink("Cart (" + @amount.ToString() + ")", "Index", "Order")</li>
+</ul>

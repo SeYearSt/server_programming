@@ -1,0 +1,239 @@
+﻿<div id="bookTableBlock">
+    <table id="bookTable">
+            <th>ID</th>
+            <th>Назва</th>
+            <th>Автор</th>
+            <th>Ціна</th>
+            <th>Кількість</th>
+        </table>
+</div>
+<div id="sageTableBlock"></div>
+<p><a href="/Home/Index">Book</a></p>
+<p><a href="/Home/Purchase">Purchase</a></p>
+<div>
+    <!-- <p><b>Автори</b></p>
+    <table>
+        <tr><td><input type="hidden" id="editId" /></td><td></td></tr>
+        <tr><td><label>Назва: </label></td><td><input type="text" id="authorName" /></td></tr>
+        <tr><td><label>Вік: </label></td><td><input type="number" id="authorAge" /></td></tr>
+        <tr><td><label>Місто: </label></td><td><input type="text" id="authority" /></td></tr>
+    </table>
+        -->
+</div>
+<div>
+    <!--
+        <p><b>Книжки</b></p>
+        <table>
+            <tr><td><input type="hidden" id="bookTableId" /></td><td></td></tr>
+            <tr><td><label>Назва: </label></td><td><input type="text" id="bookName" /></td></tr>
+            <tr><td><label>Автор: </label></td><td><input type="text" id="bookAuthor" /></td></tr>
+            <tr><td><label>Ціна: </label></td><td><input type="number" id="bookPrice" /></td></tr>
+        </table>
+        -->
+</div>
+
+<div>
+    <p><b>Додавання Замовлення</b></p>
+    
+    <button id="addPurches" onclick='addPurches()'>Зберегти</button>
+</div>
+    @section scripts
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                //GetAllSages();
+                GetAllBooks();
+
+            });
+
+            // Получение всех книг по ajax-запросу
+            function GetAllSages() {
+
+                //$("#createBlock").css('display', 'inline-block');
+                //$("#editBlock").css('display', 'none');
+                $.ajax({
+                    url: '/api/sage/',
+                    type: 'GET',
+                    dataType: 'json',
+                    beforeSend: function (xhr) {
+                        var tokenKey = "tokenInfo";
+                        var token = sessionStorage.getItem(tokenKey);
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                    },
+                    success: function (data) {
+                        FillSageTable(data);
+                    },
+                    error: function (x, y, z) {
+                        alert(x + '\n' + y + '\n' + z);
+                    }
+                });
+            }
+            // Добавление новой книги
+            function addPurches() {
+                // получаем значения для добавляемой книги
+
+                var table = document.getElementById("bookTable");
+                //alert(table.rows.length);
+                //var booksId = 
+                //var counts = 
+
+                for (var i = 1; i < table.rows.length; i++) {
+                    var count = table.rows[i].cells.item(4)
+                    if (count != 0) {
+                        var booksId = table.rows[i].cells.item(0);
+                        var counts = table.rows[i].cells.item(3);
+                        break;
+                    }
+                }
+
+                var purchase = {
+                    //BooksId: booksId,
+                    //Сount: counts
+                };
+
+                $.ajax({
+                    url: '/api/purchase/',
+                    type: 'POST',
+                    beforeSend: function (xhr) {
+                        var tokenKey = "tokenInfo";
+                        var token = sessionStorage.getItem(tokenKey);
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                    },
+                    data: JSON.stringify(purchase),
+                    contentType: "application/json;charset=utf-8",
+                    success: function (data) {
+                        alert("Purchase successful");
+                    },
+                    error: function (x, y, z) {
+                        alert(x + '\n' + y + '\n' + z);
+                    }
+                });
+            }
+            // Удаление книги
+            function DeleteBook(id) {
+
+                $.ajax({
+                    url: '/api/sage/' + id,
+                    type: 'DELETE',
+                    contentType: "application/json;charset=utf-8",
+                    success: function (data) {
+                        GetAllBooks();
+                    },
+                    error: function (x, y, z) {
+                        alert(x + '\n' + y + '\n' + z);
+                    }
+                });
+            }
+            // редактирование книги
+            function EditBook() {
+                var id = $('#editId').val()
+                // получаем новые значения для редактируемой книги
+                var book = {
+                    Id: $('#editId').val(),
+                    Name: $('#editName').val(),
+                    Age: $('#editAge').val(),
+                    City: $('#editCity').val()
+                };
+                $.ajax({
+                    url: '/api/sage/' + id,
+                    type: 'PUT',
+                    data: JSON.stringify(book),
+                    contentType: "application/json;charset=utf-8",
+                    success: function (data) {
+                        GetAllBooks();
+                    },
+                    error: function (x, y, z) {
+                        alert(x + '\n' + y + '\n' + z);
+                    }
+                });
+            }
+            // вывод полученных данных на экран
+            function FillSageTable(sages) {
+                var strResult = "<table><th>ID</th><th>Назва</th><th>Вік</th><th>Місто</th>";
+                $.each(sages, function (index, sage) {
+                    strResult += "<tr><td>" + sage.Id + "</td><td> " + sage.Name + "</td><td>" +
+                        sage.Age + "</td><td>" + sage.City +
+                        "</td><td><a id='editItem' data-item='" + sage.Id + "' onclick='EditItem(this);' >Змінити</a></td>" +
+                        "<td><a id='delItem' data-item='" + sage.Id + "' onclick='DeleteItem(this);' >Видалити</a></td></tr>";
+                });
+                strResult += "</table>";
+                $("#sageTableBlock").html(strResult);
+
+            }
+            // обработчик удаления
+            function DeleteItem(el) {
+                // получаем id удаляемого объекта
+                var id = $(el).attr('data-item');
+                DeleteBook(id);
+            }
+            // обработчик редактирования
+            function EditItem(el) {
+                // получаем id редактируемого объекта
+                var id = $(el).attr('data-item');
+                GetBook(id);
+            }
+            // вывод данных редактируемой книги в поля для редактирования
+            function ShowBook(book) {
+                if (book != null) {
+                    $("#createBlock").css('display', 'none');
+                    $("#editBlock").css('display', 'block');
+                    $("#editId").val(book.Id);
+                    $("#editName").val(book.Name);
+                    $("#editAge").val(book.Age);
+                    $("#editCity").val(book.City);
+                }
+                else {
+                    alert("Такої книги не існує");
+                }
+            }
+            // запрос книги на редактирование
+            function GetBook(id) {
+                $.ajax({
+                    url: '/api/sage/' + id,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        ShowBook(data);
+                    },
+                    error: function (x, y, z) {
+                        alert(x + '\n' + y + '\n' + z);
+                    }
+                });
+            }
+
+            function GetAllBooks() {
+
+                $.ajax({
+                    url: '/api/values/',
+                    type: 'GET',
+                    dataType: 'json',
+                    beforeSend: function (xhr) {
+                        var tokenKey = "tokenInfo";
+                        var token = sessionStorage.getItem(tokenKey);
+                        xhr.setRequestHeader("Authorization", "Bearer " + token);
+                    },
+                    success: function (data) {
+                        FillBookTable(data);
+                    },
+                    error: function (x, y, z) {
+                        alert(x + '\n' + y + '\n' + z);
+                    }
+                });
+            }
+
+                function FillBookTable(books) {
+                    //var strResult = "<table id='bookTable'><th>ID</th><th>Назва</th><th>Автор</th><th>Ціна</th><th>Кількість</th>";
+                    $.each(books, function (index, book) {
+
+                        var rowStrResult = "<tr><td>" + book.Id + "</td><td> " + book.Name + "</td><td>" +
+                            book.Author + "</td><td>" + book.Price +
+                            "</td><td><input type='number' min='0' max='5' step='1'></td></tr>";
+
+                        $('#bookTable > tbody:last-child').append(rowStrResult);
+                    });
+                    //strResult += "</table>";
+                   // $("#bookTableBlock").html(strResult);
+            }
+        </script>
+    }

@@ -1,0 +1,51 @@
+﻿@model Lab2.Models.Sage
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>@Html.DisplayFor(model => model.name)</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.age)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.age)
+        </dd>
+
+        @if (Model.photo != null)
+        {
+            <dt>
+                @Html.DisplayNameFor(model => model.photo)
+            </dt>
+
+            <dd>
+                <img src="@Model.photo" alt="@Model.name" width="300px" />
+            </dd>
+        }
+        <dt>
+            @Html.DisplayNameFor(model => model.city)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.city)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Books)
+        </dt>
+
+        <dd>
+            @Html.Raw(String.Join("; ", Model.Books.Select(x => Html.ActionLink(x.name.ToString(), "Details", "Books", new { id = x.IdBook }, null))))<!--x.name)))-->
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Back to List", "Index")
+</p>

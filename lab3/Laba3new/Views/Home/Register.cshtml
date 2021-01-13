@@ -1,0 +1,39 @@
+﻿<div>
+    <label>Введіть email</label><br />
+    <input type="email" id="email" /> <br /><br />
+    <label>Введіть пароль</label><br />
+    <input type="password" id="password" /><br /><br />
+    <label>Підтвердіть пароль</label><br />
+    <input type="password" id="confirmpassword" /><br /><br />
+    <input type="submit" id="submit" value="Реєстрація" />
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('#submit').click(function (e) {
+                e.preventDefault();
+                Registration();
+            });
+            function Registration() {
+                var data = {
+                    Email: $('#email').val(),
+                    Password: $('#password').val(),
+                    ConfirmPassword: $('#confirmpassword').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/Account/Register',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        alert("Реєстрація пройдена");
+                    },
+                    error: function (data) {
+                        alert("В процесі реєстрації  виникла помилка");
+                    }
+                });
+            }
+        })
+    </script>
+}

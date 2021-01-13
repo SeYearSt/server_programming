@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Lab2.Models.Sage>
+
+@using (Html.BeginForm("AddSage", "Books", "POST"))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <input type="hidden" name="BookId" value="@ViewBag.AddSageToBookId" />
+
+        <div class="form-group">
+            @foreach (var sage in Model)
+            {
+                <label>
+                    <input type="checkbox" value="@sage.IdSage" name="Sages" />
+                    @sage.name
+                </label>
+                <hr/>
+            }
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Add" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}

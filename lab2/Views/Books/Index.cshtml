@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Lab2.Models.Book>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Sages)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.description)
+            </td>
+            <td>
+                @Html.Raw(String.Join("; ", item.Sages.Select(x => Html.ActionLink(x.name.ToString(), "Details", "Sages", new { id = x.IdSage }, null))))<!--x.name)))-->
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { id = item.IdBook }, new { @class = "btn btn-default" }) 
+                <input type="button" value="Замовити &raquo;" data-BookId="@item.IdBook.ToString()" class="btn btn-default OrderBook_Item_Add" />
+            </td>
+        </tr>
+    }
+
+</table>
+
+<script>
+    var ajaxUrl = "@Url.Action("OrderBook", "api/Order")";
+</script>
